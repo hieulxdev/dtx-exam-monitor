@@ -318,20 +318,15 @@
     sendLog('tab_switch', switchCount);
   }
 
-  // visibilitychange: bắn khi tab thật sự bị ẩn (chuyển tab, thu nhỏ, alt-tab)
+  // visibilitychange: dáng tin cậy nhất, chỉ bắn khi tab bị ẩn thật sự
   document.addEventListener('visibilitychange', function(){
     if(document.hidden) registerSwitch();
   });
 
-  // window blur bị trigger cả khi click vào iframe → KHÔNG dùng trực tiếp.
-  // Thay vào đó: chỉ tính blur là "rời trang" nếu document vẫn visible sau 200ms
-  // (tức focus chuyển sang app khác, không phải vào iframe).
-  window.addEventListener('blur', function(){
-    if(!examStarted) return;
-    setTimeout(function(){
-      if(!document.hidden) registerSwitch();
-    }, 200);
-  });
+  // window.blur KHÔNG dùng vì không phân biệt được:
+  //   (a) click vào iframe (cross-origin → mousedown không bubble ra ngoài)
+  //   (b) alt-tab / chuyển app thật sự
+  // visibilitychange đã đủ bắt tất cả trường hợp cần thiết trên trình duyệt hiện đại.
 
   // Gửi log lần cuối khi đóng / rời trang hẳn
   window.addEventListener('pagehide', function(){
