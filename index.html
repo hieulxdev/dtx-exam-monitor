@@ -239,7 +239,7 @@
 (function(){
   // ====== CẤU HÌNH ======
   // Dán URL "Web app" của Apps Script (sau khi Deploy) vào đây
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzY3fUYOftQ3LxXxnLc9gNpHtm3_iJizpOir6e1iVCYGiNIvYpKSo57sT2K_SOzHh1G9A/exec";
+  const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
   const EXAM_NAME = "ĐTX 01 C# Winform";
 
   let mssv = "";
@@ -318,13 +318,19 @@
     sendLog('tab_switch', switchCount);
   }
 
+  // visibilitychange: bắn khi tab thật sự bị ẩn (chuyển tab, thu nhỏ, alt-tab)
   document.addEventListener('visibilitychange', function(){
     if(document.hidden) registerSwitch();
   });
 
-  // Một số trình duyệt/desktop: blur cửa sổ (alt-tab) không luôn kèm visibilitychange
+  // window blur bị trigger cả khi click vào iframe → KHÔNG dùng trực tiếp.
+  // Thay vào đó: chỉ tính blur là "rời trang" nếu document vẫn visible sau 200ms
+  // (tức focus chuyển sang app khác, không phải vào iframe).
   window.addEventListener('blur', function(){
-    if(examStarted) registerSwitch();
+    if(!examStarted) return;
+    setTimeout(function(){
+      if(!document.hidden) registerSwitch();
+    }, 200);
   });
 
   // Gửi log lần cuối khi đóng / rời trang hẳn
