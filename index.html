@@ -124,14 +124,19 @@
   }
 
   /* ---------- EXAM (màn hình làm bài) ---------- */
-  #exam{ display:none; min-height:100vh; }
+  #exam{
+    display:none;
+    height:100vh;
+    flex-direction:column;
+  }
+  #exam.active{ display:flex; }
   .topbar{
-    position:sticky; top:0; z-index:50;
+    flex-shrink:0;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:16px;
-    padding:12px 22px;
+    padding:10px 22px;
     background:var(--ink);
     color:#eceae3;
     font-family:var(--mono);
@@ -152,11 +157,11 @@
   .dot.bad{ background:#e25c45; }
   #switchCount{ font-weight:700; color:#fff; }
 
-  #formWrap{ padding:18px; max-width:920px; margin:0 auto; }
+  #formWrap{ flex:1; display:flex; overflow:hidden; }
   iframe.gform{
+    flex:1;
     width:100%;
-    height:78vh;
-    border:1px solid var(--line);
+    border:none;
     background:#fff;
   }
 
@@ -230,7 +235,6 @@
       </iframe>
     </div>
 
-    <footer class="foot">Hệ thống giám sát bài thi nội bộ — không lưu nội dung câu trả lời, chỉ ghi nhận hành vi chuyển tab.</footer>
   </div>
 
   <div id="toast">⚠ Đã ghi nhận: bạn vừa rời khỏi trang thi</div>
@@ -239,7 +243,7 @@
 (function(){
   // ====== CẤU HÌNH ======
   // Dán URL "Web app" của Apps Script (sau khi Deploy) vào đây
-  const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzY3fUYOftQ3LxXxnLc9gNpHtm3_iJizpOir6e1iVCYGiNIvYpKSo57sT2K_SOzHh1G9A/exec";
   const EXAM_NAME = "ĐTX 01 C# Winform";
 
   let mssv = "";
@@ -299,7 +303,7 @@
     mssv = v;
     mssvDisplay.textContent = mssv;
     gate.style.display = 'none';
-    exam.style.display = 'block';
+    exam.classList.add('active');
     examStarted = true;
     sendLog('start', 0);
   });
