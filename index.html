@@ -204,8 +204,8 @@
       <p class="sub">Nhập đúng Mã số sinh viên của bạn. Hệ thống sẽ ghi lại số lần bạn chuyển sang cửa sổ / tab khác trong suốt quá trình làm bài.</p>
 
       <label for="mssv">Mã số sinh viên</label>
-      <input type="text" id="mssv" placeholder="VD: 2021601234" autocomplete="off" inputmode="numeric">
-      <div class="error-msg" id="errMsg">Vui lòng nhập MSSV hợp lệ (chỉ số, tối thiểu 6 ký tự).</div>
+      <input type="text" id="mssv" placeholder="VD: 2021601234" autocomplete="off">
+      <div class="error-msg" id="errMsg">Vui lòng nhập MSSV hợp lệ.</div>
 
       <div class="gate-note">
         Mọi thao tác rời khỏi trang thi (chuyển tab, thu nhỏ cửa sổ, mở ứng dụng khác) đều được ghi nhận kèm thời gian và gửi về hệ thống giám sát.
@@ -261,7 +261,7 @@
   const toast = document.getElementById('toast');
 
   function validMSSV(v){
-    return /^[A-Za-z0-9]{6,}$/.test(v.trim());
+    return /^[A-Za-z0-9]+$/.test(v.trim());
   }
 
   function showToast(){
