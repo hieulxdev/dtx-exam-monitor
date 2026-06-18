@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ĐTX 01 C# Winform — Bài thi trắc nghiệm</title>
+<style>
+  :root{
+    --ink:#1b2430;
+    --paper:#f6f5f1;
+    --line:#d8d4c8;
+    --accent:#a4402a;
+    --accent-dim:#c7704f;
+    --safe:#3a6b4f;
+    --warn:#a4402a;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    --serif: "Source Serif Pro", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- GATE (màn hình nhập MSSV) ---------- */
+  #gate{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .gate-card{
+    width:100%;
+    max-width:420px;
+    background:#fff;
+    border:1px solid var(--line);
+    padding:40px 36px;
+    position:relative;
+  }
+  .gate-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:4px;
+    background:var(--accent);
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent-dim);
+    margin-bottom:10px;
+  }
+  .gate-card h1{
+    font-family:var(--serif);
+    font-size:26px;
+    font-weight:600;
+    line-height:1.25;
+    margin:0 0 8px;
+  }
+  .gate-card p.sub{
+    font-size:14px;
+    color:#5b6472;
+    margin:0 0 28px;
+    line-height:1.5;
+  }
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:#5b6472;
+    margin-bottom:8px;
+  }
+  input[type="text"]{
+    width:100%;
+    font-family:var(--mono);
+    font-size:16px;
+    padding:13px 14px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input[type="text"]:focus{ border-color:var(--accent); }
+  .gate-note{
+    margin-top:18px;
+    font-size:12.5px;
+    color:#7a8190;
+    line-height:1.5;
+    border-left:2px solid var(--line);
+    padding-left:12px;
+  }
+  button.primary{
+    margin-top:24px;
+    width:100%;
+    padding:14px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    font-family:var(--sans);
+    font-size:14.5px;
+    font-weight:600;
+    letter-spacing:.02em;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  button.primary:hover{ background:var(--accent); }
+  button.primary:disabled{ background:#b9bcc2; cursor:not-allowed; }
+  .error-msg{
+    color:var(--accent);
+    font-size:13px;
+    margin-top:10px;
+    display:none;
+  }
+
+  /* ---------- EXAM (màn hình làm bài) ---------- */
+  #exam{ display:none; min-height:100vh; }
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:12px 22px;
+    background:var(--ink);
+    color:#eceae3;
+    font-family:var(--mono);
+    font-size:12.5px;
+  }
+  .topbar .who{ display:flex; align-items:center; gap:10px; }
+  .topbar .who b{ color:#fff; font-size:13.5px; letter-spacing:.02em; }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 11px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:2px;
+  }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--safe); }
+  .dot.warn{ background:#e2b13c; }
+  .dot.bad{ background:#e25c45; }
+  #switchCount{ font-weight:700; color:#fff; }
+
+  #formWrap{ padding:18px; max-width:920px; margin:0 auto; }
+  iframe.gform{
+    width:100%;
+    height:78vh;
+    border:1px solid var(--line);
+    background:#fff;
+  }
+
+  /* ---------- TOAST cảnh báo chuyển tab ---------- */
+  #toast{
+    position:fixed;
+    left:50%;
+    bottom:-120px;
+    transform:translateX(-50%);
+    background:var(--accent);
+    color:#fff;
+    padding:16px 24px;
+    font-size:14px;
+    font-weight:600;
+    border-radius:3px;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    transition:bottom .35s cubic-bezier(.2,.8,.3,1);
+    z-index:100;
+    max-width:90vw;
+    text-align:center;
+  }
+  #toast.show{ bottom:28px; }
+
+  footer.foot{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:11px;
+    color:#9aa0ab;
+    padding:18px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ MÀN HÌNH NHẬP MSSV ============ -->
+  <div id="gate">
+    <div class="gate-card">
+      <div class="eyebrow">ĐTX 01 · C# Winform</div>
+      <h1>Xác nhận trước khi vào thi</h1>
+      <p class="sub">Nhập đúng Mã số sinh viên của bạn. Hệ thống sẽ ghi lại số lần bạn chuyển sang cửa sổ / tab khác trong suốt quá trình làm bài.</p>
+
+      <label for="mssv">Mã số sinh viên</label>
+      <input type="text" id="mssv" placeholder="VD: 2021601234" autocomplete="off" inputmode="numeric">
+      <div class="error-msg" id="errMsg">Vui lòng nhập MSSV hợp lệ (chỉ số, tối thiểu 6 ký tự).</div>
+
+      <div class="gate-note">
+        Mọi thao tác rời khỏi trang thi (chuyển tab, thu nhỏ cửa sổ, mở ứng dụng khác) đều được ghi nhận kèm thời gian và gửi về hệ thống giám sát.
+      </div>
+
+      <button class="primary" id="startBtn">Bắt đầu làm bài</button>
+    </div>
+  </div>
+
+  <!-- ============ MÀN HÌNH LÀM BÀI ============ -->
+  <div id="exam">
+    <div class="topbar">
+      <div class="who">
+        <span>MSSV:</span><b id="mssvDisplay">—</b>
+      </div>
+      <div class="pill">
+        <span class="dot" id="statusDot"></span>
+        <span>Chuyển tab: <span id="switchCount">0</span> lần</span>
+      </div>
+    </div>
+
+    <div id="formWrap">
+      <iframe class="gform"
+        src="https://docs.google.com/forms/d/e/1FAIpQLSduPbD8NOfkce2FOQEJNIDQJW3rDxVmznDYSFEsThMhJvh_Aw/viewform?embedded=true"
+        frameborder="0" marginheight="0" marginwidth="0">
+        Đang tải…
+      </iframe>
+    </div>
+
+    <footer class="foot">Hệ thống giám sát bài thi nội bộ — không lưu nội dung câu trả lời, chỉ ghi nhận hành vi chuyển tab.</footer>
+  </div>
+
+  <div id="toast">⚠ Đã ghi nhận: bạn vừa rời khỏi trang thi</div>
+
+<script>
+(function(){
+  // ====== CẤU HÌNH ======
+  // Dán URL "Web app" của Apps Script (sau khi Deploy) vào đây
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzY3fUYOftQ3LxXxnLc9gNpHtm3_iJizpOir6e1iVCYGiNIvYpKSo57sT2K_SOzHh1G9A/exec";
+  const EXAM_NAME = "ĐTX 01 C# Winform";
+
+  let mssv = "";
+  let switchCount = 0;
+  let examStarted = false;
+
+  const gate = document.getElementById('gate');
+  const exam = document.getElementById('exam');
+  const mssvInput = document.getElementById('mssv');
+  const errMsg = document.getElementById('errMsg');
+  const startBtn = document.getElementById('startBtn');
+  const mssvDisplay = document.getElementById('mssvDisplay');
+  const switchCountEl = document.getElementById('switchCount');
+  const statusDot = document.getElementById('statusDot');
+  const toast = document.getElementById('toast');
+
+  function validMSSV(v){
+    return /^[A-Za-z0-9]{6,}$/.test(v.trim());
+  }
+
+  function showToast(){
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2600);
+  }
+
+  function flashDot(level){
+    statusDot.className = 'dot ' + (level || '');
+    setTimeout(()=>{ statusDot.className = 'dot'; }, 1800);
+  }
+
+  function sendLog(eventType, count){
+    if(!SCRIPT_URL || SCRIPT_URL.indexOf('PASTE_') === 0) return; // chưa cấu hình
+    const payload = {
+      mssv: mssv,
+      exam: EXAM_NAME,
+      event: eventType,
+      switchCount: count,
+      timestamp: new Date().toISOString()
+    };
+    // no-cors vì Apps Script Web App không trả CORS header chuẩn cho POST JSON đọc lại
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).catch(()=>{ /* im lặng, không chặn sinh viên làm bài nếu mạng lỗi */ });
+  }
+
+  startBtn.addEventListener('click', function(){
+    const v = mssvInput.value.trim();
+    if(!validMSSV(v)){
+      errMsg.style.display = 'block';
+      mssvInput.focus();
+      return;
+    }
+    errMsg.style.display = 'none';
+    mssv = v;
+    mssvDisplay.textContent = mssv;
+    gate.style.display = 'none';
+    exam.style.display = 'block';
+    examStarted = true;
+    sendLog('start', 0);
+  });
+
+  mssvInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') startBtn.click();
+  });
+
+  // ====== GHI NHẬN CHUYỂN TAB / RỜI TRANG ======
+  function registerSwitch(){
+    if(!examStarted) return;
+    switchCount++;
+    switchCountEl.textContent = switchCount;
+    flashDot(switchCount >= 5 ? 'bad' : 'warn');
+    showToast();
+    sendLog('tab_switch', switchCount);
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) registerSwitch();
+  });
+
+  // Một số trình duyệt/desktop: blur cửa sổ (alt-tab) không luôn kèm visibilitychange
+  window.addEventListener('blur', function(){
+    if(examStarted) registerSwitch();
+  });
+
+  // Gửi log lần cuối khi đóng / rời trang hẳn
+  window.addEventListener('pagehide', function(){
+    if(examStarted) sendLog('leave_page', switchCount);
+  });
+})();
+</script>
+</body>
+</html>
