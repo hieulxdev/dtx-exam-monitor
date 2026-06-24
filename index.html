@@ -199,12 +199,12 @@
   <!-- ============ MÀN HÌNH NHẬP MSSV ============ -->
   <div id="gate">
     <div class="gate-card">
-      <div class="eyebrow">ĐTX 01 · C# Winform</div>
+      <div class="eyebrow">Thi Kết thúc học phần Lớp 67CS</div>
       <h1>Xác nhận trước khi vào thi</h1>
       <p class="sub">Nhập đúng Mã số sinh viên của bạn. Hệ thống sẽ ghi lại số lần bạn chuyển sang cửa sổ / tab khác trong suốt quá trình làm bài.</p>
 
-      <label for="mssv">Mã số sinh viên</label>
-      <input type="text" id="mssv" placeholder="VD: 2021601234" autocomplete="off">
+      <label for="mssv">Họ tên - Mã số sinh viên</label>
+      <input type="text" id="mssv" placeholder="VD: Lương Xuân Hiếu - 2021601234" autocomplete="off">
       <div class="error-msg" id="errMsg">Vui lòng nhập MSSV hợp lệ.</div>
 
       <div class="gate-note">
@@ -229,7 +229,7 @@
 
     <div id="formWrap">
       <iframe class="gform"
-        src="https://docs.google.com/forms/d/e/1FAIpQLSduPbD8NOfkce2FOQEJNIDQJW3rDxVmznDYSFEsThMhJvh_Aw/viewform?embedded=true"
+        src="https://sinhvien.huce.edu.vn"
         frameborder="0" marginheight="0" marginwidth="0">
         Đang tải…
       </iframe>
@@ -260,9 +260,9 @@
   const statusDot = document.getElementById('statusDot');
   const toast = document.getElementById('toast');
 
-  function validMSSV(v){
-    return /^[A-Za-z0-9]+$/.test(v.trim());
-  }
+  // function validMSSV(v){
+  //   return /^[A-Za-z0-9]+$/.test(v.trim());
+  // }
 
   function showToast(){
     toast.classList.add('show');
@@ -294,11 +294,11 @@
 
   startBtn.addEventListener('click', function(){
     const v = mssvInput.value.trim();
-    if(!validMSSV(v)){
-      errMsg.style.display = 'block';
-      mssvInput.focus();
-      return;
-    }
+    // if(!validMSSV(v)){
+    //   errMsg.style.display = 'block';
+    //   mssvInput.focus();
+    //   return;
+    // }
     errMsg.style.display = 'none';
     mssv = v;
     mssvDisplay.textContent = mssv;
